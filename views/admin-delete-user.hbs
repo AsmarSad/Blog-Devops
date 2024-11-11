@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete User</title>
+    <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+</head>
+<body>
+    <h1>Delete User</h1>
+    <p>Are you sure you want to delete user '{{user.username}}'?</p>
+    <form action="/admin/delete-user/{{user.user_id}}" method="post">
+        <button type="submit">Delete User</button>
+    </form>
+    <a href="/admin-dashboard">Back to Dashboard</a>
+</body>
+</html>

@@ -1,0 +1,26 @@
+First of all, in .env file add all credentials
+create databases from db.sql
+
+
+Visit http://localhost:5000
+
+ For admin login:
+ http://localhost:5000/admin-login
+ admin credentials: username:admin,password:admin
+
+/: Home page.
+/login: User login page.
+/register: User registration page.
+/dashboard: User dashboard with blog posts.
+/admin-login: Admin login page.
+/admin-dashboard: Admin dashboard.
+/admin/edit-users: Admin page to edit user accounts.
+/admin/delete-users: Admin page to delete user accounts.
+/admin/edit-posts: Admin page to edit blog posts.
+/admin/delete-posts: Admin page to delete blog posts.
+/create: Page to create a new blog post.
+/my-feed: Page to view user-specific blog posts.
+/blog/:postId: Page to view details of a specific blog post.
+/edit/:postId: Page to edit a specific blog post.
+/delete/:postId: Page to delete a specific blog post.
+/logout: Log out and end the session.

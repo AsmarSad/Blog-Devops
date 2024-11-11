@@ -1,0 +1,122 @@
+---
+- name: Provision and Deploy Web Application
+  hosts: localhost
+  vars:
+    # Set your variable values here
+    do_token: "{{ vault_do_token }}"
+    ssh_key_fingerprint: "{{ vault_ssh_key_fingerprint }}"
+    region: "nyc3"
+    size: "s-2vcpu-8gb"
+    image: "ubuntu-20-04-x64"
+    db_user: "{{ vault_db_user }}"
+    db_password: "{{ vault_db_password }}"
+    db_name: "{{ vault_db_name }}"
+
+  tasks:
+    # Provisioning Droplet
+    - name: Create DigitalOcean Droplet
+      community.digitalocean.digital_ocean_droplet:
+        state: present
+        oauth_token: "{{ do_token }}"
+        name: "blog_app"
+        region: "{{ region }}"
+        size: "{{ size }}"
+        image: "{{ image }}"
+        ssh_keys: ["{{ ssh_key_fingerprint }}"]
+        backups: false
+        ipv6: false
+        monitoring: true
+      register: webserver_info
+
+    - name: Save droplet IP
+      set_fact:
+        webserver_ip: "{{ webserver_info.data.droplet.networks.v4[0].ip_address }}"
+
+    - name: Add droplet to inventory
+      add_host:
+        name: webserver
+        ansible_host: "{{ webserver_ip }}"
+        ansible_user: root
+        ansible_ssh_private_key_file: "~/.ssh/id_rsa"
+
+- name: Configure and Deploy Application on Droplet
+  hosts: webserver
+  become: true
+  vars:
+    # Redefine variables for the remote setup if necessary
+    db_user: "{{ vault_db_user }}"
+    db_password: "{{ vault_db_password }}"
+    db_name: "{{ vault_db_name }}"
+
+  tasks:
+    # Wait for apt lock to release
+    - name: Wait for apt lock to be released
+      shell: |
+        while sudo lsof /var/lib/dpkg/lock >/dev/null 2>&1; do
+          echo "Waiting for other apt processes to finish..."
+          sleep 10
+        done
+      changed_when: false
+
+    # Update packages
+    - name: Update apt packages
+      ansible.builtin.apt:
+        update_cache: yes
+
+    # Install common packages
+    - name: Install common packages
+      ansible.builtin.apt:
+        name:
+          - git
+          - curl
+          - unzip
+          - build-essential
+          - docker.io
+          - docker-compose
+        state: present
+
+    # Start Docker service
+    - name: Ensure Docker is started
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    # Set up MySQL Database
+    - name: Pull MySQL Docker image
+      ansible.builtin.docker_image:
+        name: mysql:8
+        source: pull
+
+    - name: Start MySQL container
+      ansible.builtin.docker_container:
+        name: mysql
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: "{{ db_password }}"
+          MYSQL_DATABASE: "{{ db_name }}"
+        ports:
+          - "3306:3306"
+        volumes:
+          - ./db.sql:/docker-entrypoint-initdb.d/db.sql
+        state: started
+        restart_policy: always
+
+    # Deploy the Web Application
+    - name: Copy Dockerfile and docker-compose.yml to remote
+      copy:
+        src: "{{ item }}"
+        dest: "/home/{{ ansible_user }}/{{ item }}"
+      loop:
+        - Dockerfile
+        - docker-compose.yml
+
+    - name: Start application using Docker Compose
+      ansible.builtin.shell: docker-compose up -d
+      args:
+        chdir: /home/{{ ansible_user }}
+
+    - name: Verify application is running
+      uri:
+        url: "http://{{ webserver_ip }}:5000"
+        status_code: 200

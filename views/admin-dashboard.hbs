@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/style2.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+</head>
+<body>
+    <div class="container">
+    <h1>Welcome, {{username}}!</h1>
+
+    <ul>
+        <li><a href="/admin/edit-users">Edit Users</a></li>
+        <li><a href="/admin/delete-users">Delete Users</a></li>
+        <li><a href="/admin/edit-posts">Edit Posts</a></li>
+        <li><a href="/admin/delete-posts">Delete Posts</a></li>
+          <button onclick="window.location.href='/logout'" style="background-color:aqua;">Logout</button>
+    </ul>
+    </div>
+</body>
+</html>

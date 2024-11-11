@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+   
+</head>
+<body>
+    <header>
+        <h1>Welcome, {{username}}!</h1>
+        <div class="button-container">
+            <button onclick="window.location.href='/my-feed'" style="background-color:darkblue;">My Posts</button>
+            <button onclick="window.location.href='/create'" style="background-color: darkblue;">Create Post</button>
+            <button onclick="window.location.href='/logout'" style="background-color:darkblue;">Logout</button>
+        </div>
+    </header>
+    <main>
+         <form action="/dashboard" method="get">
+        <label for="searchCriteria">Search by:</label>
+        <select id="searchCriteria" name="searchCriteria">
+            <option value="title" >Title</option>
+            <option value="category" >Category</option>
+            <option value="content" >Content</option>
+        </select>
+
+        <label for="searchTerm">Search term:</label>
+        <input type="text" id="searchTerm" name="searchTerm" value="{{searchTerm}}">
+
+        <button type="submit">Search</button>
+    </form>
+        <h2>Blog Posts</h2>
+        {{#each posts}}
+            <div class="blog-container">
+                <h3 class="blog-title"><a href="/blog/{{post_id}}">{{title}}</a></h3>
+                <p class="blog-category">Category: {{category}}</p>
+                <p class="blog-tags">Author: {{username}}</p>
+            </div>
+        {{/each}}
+    </main>
+    <footer>
+       
+    </footer>
+</body>
+</html>
