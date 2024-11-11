@@ -1,0 +1,37 @@
+---
+- name: Ensure directory exists for app files
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/app"
+    state: directory
+    mode: '0755'
+
+- name: Download wait-for-it.sh script
+  ansible.builtin.get_url:
+    url: "https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh"
+    dest: "/home/{{ ansible_user }}/app/wait-for-it.sh"
+    mode: '0755'
+
+- name: Copy application files to remote server
+  ansible.builtin.synchronize:
+    src: /root/Blog-Devops/
+    dest: /home/{{ ansible_user }}/app/
+    mode: push
+    recursive: yes
+
+- name: Start MySQL container
+  ansible.builtin.shell: docker-compose up -d db
+  args:
+    chdir: "/home/{{ ansible_user }}/app"
+
+- name: Wait for MySQL to be ready
+  ansible.builtin.shell: ./wait-for-it.sh 127.0.0.1:3306 -t 60
+  args:
+    chdir: "/home/{{ ansible_user }}/app"
+
+- name: Start application container
+  ansible.builtin.shell: docker-compose up --build -d app
+  args:
+    chdir: "/home/{{ ansible_user }}/app"
+  notify:
+    - Check app container logs
+

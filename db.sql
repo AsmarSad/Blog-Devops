@@ -1,4 +1,5 @@
-create database project;
+CREATE DATABASE IF NOT EXISTS project;
+
 use project;
 create table users 
 (
@@ -54,4 +55,5 @@ CREATE TABLE posts (
 -- ('c5d9b4d5-33fc-4f31-a1b8-e535c663f7d4', 'Tech Gadgets Review', 'Explore the latest and coolest tech gadgets in this comprehensive review.', 'Technology', '3754673e-ad37-4af8-951f-56f4b2ba9f49'),
 -- ('bd85528a-7b17-471d-a20f-879a98b0f20e', 'Healthy Recipes: Quick and Delicious', 'Discover quick and delicious healthy recipes to enhance your well-being.', 'Health', 'c65e3956-2683-48e9-9da5-eccf37e988eb'),
 -- ('72b90f8f-87b8-428c-8fb1-87ed072a8e22', 'Book Recommendations: Must-Reads', 'Explore a curated list of must-read books across various genres.', 'Books', 'db5ed37b-2dc2-4fe9-ba06-1e267eda82cd');
+
 

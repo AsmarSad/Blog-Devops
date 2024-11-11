@@ -1,0 +1,6 @@
+---
+- name: Check app container logs
+  ansible.builtin.shell: docker-compose logs
+  args:
+    chdir: "/home/{{ ansible_user }}/app"
+

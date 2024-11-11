@@ -1,0 +1,30 @@
+---
+- name: Wait for apt lock to be released
+  shell: |
+    while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1 || sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do
+      sleep 10
+    done
+  changed_when: false
+
+- name: Update apt packages
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install common packages
+  ansible.builtin.apt:
+    name:
+      - git
+      - curl
+      - unzip
+      - build-essential
+      - docker.io
+      - docker-compose
+    state: present
+  retries: 5
+  delay: 10
+- name: Ensure Docker is started
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+

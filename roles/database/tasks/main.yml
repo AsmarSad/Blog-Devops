@@ -1,0 +1,6 @@
+---
+- name: Pull MySQL Docker image
+  ansible.builtin.docker_image:
+    name: mysql:8
+    source: pull
+

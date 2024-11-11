@@ -1,0 +1,26 @@
+---
+- name: Create DigitalOcean Droplet
+  community.digitalocean.digital_ocean_droplet:
+    state: present
+    oauth_token: "{{ do_token }}"
+    name: "blog-app"
+    region: "{{ region }}"
+    size: "{{ size }}"
+    image: "{{ image }}"
+    ssh_keys: ["{{ ssh_key_fingerprint }}"]
+    backups: false
+    ipv6: false
+    monitoring: true
+  register: webserver_info
+
+- name: Save droplet IP
+  set_fact:
+    webserver_ip: "{{ webserver_info.data.droplet.networks.v4[0].ip_address }}"
+
+- name: Add droplet to inventory
+  add_host:
+    name: "{{ webserver_ip }}"
+    groups: webserver  # Adds the droplet to the 'webserver' group
+    ansible_ssh_user: root
+    ansible_ssh_private_key_file: "~/.ssh/id_rsa"
+

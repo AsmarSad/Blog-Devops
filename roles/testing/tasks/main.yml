@@ -1,0 +1,70 @@
+---
+- name: Verify the web application is accessible and functioning
+  uri:
+    url: "http://{{ webserver_ip }}:5000"  # Adjust as needed
+    method: GET
+    status_code: 200
+  register: web_app_response
+  retries: 3
+  delay: 5
+  until: web_app_response.status == 200
+
+- name: Ensure pip3 is installed
+  become: true
+  apt:
+    name: python3-pip
+    state: present
+
+
+- name: Install PyMySQL
+  pip:
+    name: PyMySQL
+    state: present
+
+# - name: Ensure the database connection is established
+#   community.mysql.mysql_db:
+#     name: "{{ db_name }}"
+#     login_host: "{{ db_host }}"
+#     login_user: "{{ db_user }}"
+#     login_password: "{{ db_password }}"
+#     state: present
+#   register: db_connection_status
+#   retries: 3
+#   delay: 10
+#   until: db_connection_status is success
+
+# - name: Test if data can be read from the database
+#   community.mysql.mysql_query:
+#     login_host: "{{ db_host }}"
+#     login_user: "{{ db_user }}"
+#     login_password: "{{ db_password }}"
+#     db: "{{ db_name }}"
+#     query: "SELECT 1;"
+#   register: db_read_status
+#   retries: 3
+#   delay: 10
+#   until: db_read_status is success
+
+# - name: Test if data can be written to the database
+#   community.mysql.mysql_query:
+#     login_host: "{{ db_host }}"
+#     login_user: "{{ db_user }}"
+#     login_password: "{{ db_password }}"
+#     db: "{{ db_name }}"
+#     query: "INSERT INTO test_table (column1) VALUES ('test_value');"
+#   register: db_write_status
+#   retries: 3
+#   delay: 10
+#   until: db_write_status is success
+
+# - name: Verify data can be read after writing to the database
+#   community.mysql.mysql_query:
+#     login_host: "{{ db_host }}"
+#     login_user: "{{ db_user }}"
+#     login_password: "{{ db_password }}"
+#     db: "{{ db_name }}"
+#     query: "SELECT column1 FROM test_table WHERE column1 = 'test_value';"
+#   register: db_verify_status
+#   retries: 3
+#   delay: 10
+#   until: db_verify_status is success

@@ -542,7 +542,7 @@ app.get('/blog/:postId', async (req, res) => {
         } else {
             if (result.length > 0) {
                 // console.log(result[0])
-                res.render('blogDetails', { post: result[0] });
+                res.render('blogdetails', { post: result[0] });
             } else {
                 res.redirect('/dashboard');
             }
@@ -604,6 +604,6 @@ app.get('/delete/:postId', async (req, res) => {
     }
 });
 
-app.listen(5000, () => {
-    console.log(`Server is running on http://localhost:5000`);
+app.listen(5000, '0.0.0.0', () => {
+    console.log('Server is running on port 5000');
   });

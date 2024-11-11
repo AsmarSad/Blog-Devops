@@ -1,0 +1,3 @@
+webserver_ip: "{{ ansible_host }}"
+db_name: "project"
+
