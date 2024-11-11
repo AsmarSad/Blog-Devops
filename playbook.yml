@@ -1,12 +1,15 @@
 ---
+# Define the Vault file containing sensitive information
 - name: Provision and Deploy Web Application
   hosts: localhost
+  vars_files:
+    - vault.yml  # Load variables from the Vault file
   vars:
-    # Set your variable values here
+    # Set variable values from Vault
     do_token: "{{ vault_do_token }}"
     ssh_key_fingerprint: "{{ vault_ssh_key_fingerprint }}"
-    region: "nyc3"
-    size: "s-2vcpu-8gb"
+    region: "sfo3"
+    size: "s-4vcpu-8gb"
     image: "ubuntu-20-04-x64"
     db_user: "{{ vault_db_user }}"
     db_password: "{{ vault_db_password }}"
@@ -18,7 +21,7 @@
       community.digitalocean.digital_ocean_droplet:
         state: present
         oauth_token: "{{ do_token }}"
-        name: "blog_app"
+        name: "blog-app"
         region: "{{ region }}"
         size: "{{ size }}"
         image: "{{ image }}"
@@ -42,17 +45,14 @@
 - name: Configure and Deploy Application on Droplet
   hosts: webserver
   become: true
-  vars:
-    # Redefine variables for the remote setup if necessary
-    db_user: "{{ vault_db_user }}"
-    db_password: "{{ vault_db_password }}"
-    db_name: "{{ vault_db_name }}"
+  vars_files:
+    - vault.yml  # Load Vault file again for the remote host
 
   tasks:
     # Wait for apt lock to release
     - name: Wait for apt lock to be released
       shell: |
-        while sudo lsof /var/lib/dpkg/lock >/dev/null 2>&1; do
+        while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1 || sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do
           echo "Waiting for other apt processes to finish..."
           sleep 10
         done
@@ -74,6 +74,8 @@
           - docker.io
           - docker-compose
         state: present
+      retries: 3
+      delay: 10
 
     # Start Docker service
     - name: Ensure Docker is started
@@ -104,7 +106,7 @@
 
     # Deploy the Web Application
     - name: Copy Dockerfile and docker-compose.yml to remote
-      copy:
+      ansible.builtin.copy:
         src: "{{ item }}"
         dest: "/home/{{ ansible_user }}/{{ item }}"
       loop:
@@ -114,9 +116,10 @@
     - name: Start application using Docker Compose
       ansible.builtin.shell: docker-compose up -d
       args:
-        chdir: /home/{{ ansible_user }}
+        chdir: "/home/{{ ansible_user }}"
 
     - name: Verify application is running
-      uri:
+      ansible.builtin.uri:
         url: "http://{{ webserver_ip }}:5000"
         status_code: 200
+
