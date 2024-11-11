@@ -50,9 +50,9 @@
 
   tasks:
     # Wait for apt lock to release
-    - name: Wait for apt lock to be released
+    - name: Wait for the apt lock to be released
       shell: |
-        while sudo lsof /var/lib/dpkg/lock >/dev/null 2>&1; do
+        while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1 || sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do
           echo "Waiting for other apt processes to finish..."
           sleep 10
         done
@@ -74,6 +74,8 @@
           - docker.io
           - docker-compose
         state: present
+      retries: 3
+      delay: 10
 
     # Start Docker service
     - name: Ensure Docker is started
