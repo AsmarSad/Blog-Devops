@@ -74,7 +74,7 @@
           - docker.io
           - docker-compose
         state: present
-      retries: 3
+      retries: 5
       delay: 10
 
     # Start Docker service
@@ -104,7 +104,14 @@
         state: started
         restart_policy: always
 
-    # Deploy the Web Application
+    # Create directory on the remote server for files
+    - name: Ensure directory exists for app files
+      ansible.builtin.file:
+        path: "/home/{{ ansible_user }}"
+        state: directory
+        mode: '0755'
+
+    # Copy Dockerfile and docker-compose.yml to remote
     - name: Copy Dockerfile and docker-compose.yml to remote
       ansible.builtin.copy:
         src: "{{ item }}"
