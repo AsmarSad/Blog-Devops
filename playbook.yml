@@ -117,7 +117,7 @@
         src: "{{ item }}"
         dest: "/home/{{ ansible_user }}/{{ item }}"
       loop:
-        - Dockerfile
+        - DockerFile
         - docker-compose.yml
 
     - name: Start application using Docker Compose
