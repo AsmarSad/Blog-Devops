@@ -5,16 +5,12 @@
   vars_files:
     - vault.yml  # Load variables from the Vault file
   vars:
-    # Set variable values from Vault
     do_token: "{{ vault_do_token }}"
     ssh_key_fingerprint: "{{ vault_ssh_key_fingerprint }}"
     region: "sfo3"
     size: "s-4vcpu-8gb"
     image: "ubuntu-20-04-x64"
-    db_user: "{{ vault_db_user }}"
-    db_password: "{{ vault_db_password }}"
-    db_name: "{{ vault_db_name }}"
-
+  
   tasks:
     # Provisioning Droplet
     - name: Create DigitalOcean Droplet
@@ -47,6 +43,10 @@
   become: true
   vars_files:
     - vault.yml  # Load Vault file again for the remote host
+  vars:
+    db_user: "{{ vault_db_user }}"
+    db_password: "{{ vault_db_password }}"
+    db_name: "{{ vault_db_name }}"
 
   tasks:
     # Wait for apt lock to release
