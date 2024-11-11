@@ -110,6 +110,11 @@
         path: "/home/{{ ansible_user }}"
         state: directory
         mode: '0755'
+    - name: Copy .env file to remote server
+      copy:
+        src: .env
+        dest: /home/{{ ansible_user }}/.env
+        mode: '0644'
 
     # Copy Dockerfile and docker-compose.yml to remote
     - name: Copy Dockerfile and docker-compose.yml to remote
