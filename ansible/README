@@ -1,0 +1,72 @@
+# 🛠️ Ansible Setup for Blog Application
+
+This repository contains all the Ansible playbooks I used to automate the setup and configuration of the infrastructure for the **Blog Application**. With these playbooks, I  provision and configure the necessary resources, like **GitLab**, **MySQL**, **Node.js**, and **Nginx**, on DigitalOcean droplets.
+
+
+## 🌍 Project Structure
+
+Here’s what the folder structure looks like:
+
+![Ansible Structure](image.png)
+
+- **roles/**: Contains different roles for provisioning, app setup, database setup, and load testing.
+- **vault.yml**: This is where I store sensitive data, such as API tokens and database credentials, securely encrypted with Ansible Vault.
+
+## 🔑 Vault Configuration
+
+The `vault.yml` file is where I store sensitive information like database credentials and DigitalOcean API tokens. This file is encrypted with Ansible Vault, so it’s important to keep it secure.
+
+Here’s what the `vault.yml` file looks like:
+
+```yaml
+vault_do_token: "<snipped>"
+vault_ssh_key_fingerprint: "<snipped>"
+vault_db_user: "<snipped>"
+vault_db_password: "<snipped>"
+vault_db_name: "project"
+db_host: "<snipped>"
+db_user: "<snipped>"
+db_password: "<snipped>"
+db_name: "project"
+```
+
+The **Ansible Vault password** is `asmar`. I’ll need to enter this password when running the playbooks to decrypt the file and access the sensitive data.
+
+## 🛠️ Roles Overview
+
+### 🧑‍💻 **Provision Role**
+
+The `provision` role is responsible for creating the DigitalOcean droplets where the app will live. It installs everything I need, like Docker, Docker Compose, and MySQL. It’s essentially setting up the environment from scratch.
+
+### 💻 **App Role**
+
+The `app` role takes care of deploying the **Node.js** application on the server. It builds the Docker image for the app, runs it in a container, and ensures that everything is set up correctly.
+
+### 🗄️ **Database Role**
+
+This role is all about setting up **MySQL**. It creates the database and the necessary tables (like `users` and `posts`) and loads the schema. The database credentials come from the `vault.yml` file, ensuring that they are securely configured.
+
+### 🌐 **Nginx Role**
+
+Here, I configure **Nginx** to act as a reverse proxy and load balancer for the web application. Nginx handles incoming requests and routes them to the appropriate app container.
+### 🧪 Testing Role
+The testing role is responsible for verifying that the web application is functioning correctly and that the database connection is properly established. The tests performed by this role ensure that:
+
+Also Ensures that the app can connect to the database.
+Verifies that data can be read and written to the database successfully (e.g., testing CRUD operations).
+
+### 🔧 **Setup Role**
+
+The `setup` role is where I define the basic setup tasks. It installs any dependencies needed on the server, such as Node.js and MySQL clients. It makes sure everything is ready for the app to run.
+
+## 🚀 Running the Playbooks
+
+To run the playbooks and provision the infrastructure, I usefd this command:
+
+```bash
+ansible-playbook -i inventory.ini playbook.yml --ask-vault-pass
+```
+
+
+
+!
