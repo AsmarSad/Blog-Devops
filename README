@@ -1,20 +1,12 @@
 # 🚀 Blog Application with Docker
 
 This is a simple **Blog Application** I built that allows users to register, log in, and manage blog posts. It includes an admin interface to manage users and posts. The app is built using **Node.js**, **Express**, **MySQL**, and **Docker** for easy containerization.
-
-## 📋 Prerequisites
-
-Before running the app, I made sure I had the following installed:
-
-- **Docker**
-- **Docker Compose**
-
+# ❗(Dip Note! - Ansible's documentation is in /ansible folder)
 ## 🌍 Project Structure
 
-Here’s a look at how I’ve organized the project:
 
+![Source Code Structure](screenshots/Structure.png)
 
-![Source Code Structure](image.png)
 
 ## 🛠️ Setup Instructions
 
@@ -30,43 +22,11 @@ DB_USER=<snipped>
 DB_PASSWORD=<snipped>
 DB_NAME=project
 ```
-### 4. 🌐 Set Up the Database
+### 2.🌐 Set Up the Database
 
-I included a `db.sql` file that gets automatically executed when the database container starts. This file creates the necessary tables and inserts default data. Here's the schema:
+I included a `db.sql` file that gets automatically executed when the database container starts. This file creates the necessary tables and inserts default data. 
 
-```sql
-CREATE DATABASE IF NOT EXISTS project;
-
-USE project;
-
-CREATE TABLE users (
-    user_id VARCHAR(255) PRIMARY KEY,
-    first_name VARCHAR(255) NOT NULL,
-    last_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    username VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE admin (
-    admin_id VARCHAR(255) PRIMARY KEY,
-    username VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL
-);
-
-INSERT INTO admin(admin_id, username, password)
-VALUES
-('00da5d56-3a51-4a07-96fc-12781986bc71', 'admin', '$2a$10$.mKdLxgZ1H9BdQt6pghR/eSrtcYGvfaCQ8ISaEgbra4r7i5X6IALS');
-
-CREATE TABLE posts (
-    post_id VARCHAR(255) PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    content TEXT,
-    category VARCHAR(255),
-    user_id VARCHAR(255),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-```
+Admin credentials are inserted by default in this SQL file.
 
 The database will be automatically created when the `db` container starts, and the tables will be set up according to this SQL file.
 
@@ -130,7 +90,6 @@ This command will:
 
 - Build the Docker images for the app and database using the `DockerFile` and the `docker-compose.yml` configuration.
 - Start the containers in detached mode, so they run in the background.
-- Make the app accessible at **http://localhost:5000**.
 
 
 ### 5. 🚀 Start the Application
@@ -142,10 +101,15 @@ After running the containers, I can access the app at **http://localhost:5000**.
 Here’s a list of the routes available in the app:
 
 - **`/`**: Home page
+![alt text](screenshots/Home_Page.png)
 - **`/login`**: User login page
+![alt text](screenshots/Login_Page.png)
 - **`/register`**: User registration page
+![alt text](screenshots/Register_Page.png)
 - **`/dashboard`**: User dashboard with blog posts
 - **`/admin-login`**: Admin login page
+![alt text](screenshots/Admin_Login.png)
+
 - **`/admin-dashboard`**: Admin dashboard
 - **`/admin/edit-users`**: Admin page to edit user accounts
 - **`/admin/delete-users`**: Admin page to delete user accounts
@@ -161,7 +125,7 @@ Here’s a list of the routes available in the app:
 ### 7. 📝 Admin Credentials
 
 If I need to log in as an admin in /admin-login page, I use the these credentials:
-
+As I said they are inserted in `db.sql` file
 - **Username**: `admin`
 - **Password**: `96S10a11`
 
